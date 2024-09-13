@@ -1,0 +1,30 @@
+.app {
+  display: flex;
+}
+
+.left-pane {
+  width: 50%;
+  padding: 10px;
+}
+
+.right-pane {
+  width: 50%;
+  padding: 10px;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.navigation {
+  margin: 10px 0;
+}
+
+button {
+  padding: 5px 10px;
+  margin: 0 10px;
+  cursor: pointer;
+}

@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import PdfViewer from './components/PdfViewer';
 import InvoiceForm from "./components/InvoiceForm";
-import InvoiceList from "./components/InvoiceList";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "./App.css";
+
+
 
 class App extends Component {
   constructor(props) {
@@ -44,7 +45,7 @@ class App extends Component {
           {/* Other components like InvoiceForm or InvoiceList can go here */}
           <h1>Invoice Management System</h1>
           <InvoiceForm refreshInvoices={this.fetchInvoices} />
-          <InvoiceList invoices={this.state.invoices} />
+          
         </div>
       </div>
     );

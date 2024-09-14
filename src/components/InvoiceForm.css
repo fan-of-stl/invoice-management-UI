@@ -38,9 +38,15 @@
     width: calc(100% - margin - padding);
     margin: 2%;
     margin-top: 0;
+    gap: 10px;
     padding: 1%;
     display: flex;
     flex-direction: row;
     justify-content: end;
-    align-items: flex-start;
+    align-items: flex-end;
+}
+
+.marker{
+    font-weight: 400;
+    color: red;
 }

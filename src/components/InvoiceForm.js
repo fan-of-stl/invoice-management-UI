@@ -4,20 +4,66 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import LineItemList from "./LineItemList";
 import { Typography } from "@mui/material";
-import { ArrowDropDownCircleOutlined} from "@mui/icons-material";
+import { ArrowDropDownCircleOutlined } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import "./InvoiceForm.css";
+import ActionAlerts from "./ActionAlerts";
 
 const lineItemsData = [
-  { debit: "Debit 1", glDesc: "GL Description 1", glCode: "001", text: "Some text 1" },
-  { debit: "Debit 2", glDesc: "GL Description 2", glCode: "002", text: "Some text 2" },
-  { debit: "Debit 3", glDesc: "GL Description 3", glCode: "003", text: "Some text 3" },
-  { debit: "Debit 4", glDesc: "GL Description 4", glCode: "004", text: "Some text 4" },
-  { debit: "Debit 5", glDesc: "GL Description 5", glCode: "005", text: "Some text 5" },
-  { debit: "Debit 6", glDesc: "GL Description 6", glCode: "005", text: "Some text 6" },
-  { debit: "Debit 7", glDesc: "GL Description 7", glCode: "007", text: "Some text 7" },
-  { debit: "Debit 8", glDesc: "GL Description 8", glCode: "008", text: "Some text 8" },
-  { debit: "Debit 9", glDesc: "GL Description 9", glCode: "009", text: "Some text 9" },
+  {
+    debit: "Debit 1",
+    glDesc: "GL Description 1",
+    glCode: "001",
+    text: "Some text 1",
+  },
+  {
+    debit: "Debit 2",
+    glDesc: "GL Description 2",
+    glCode: "002",
+    text: "Some text 2",
+  },
+  {
+    debit: "Debit 3",
+    glDesc: "GL Description 3",
+    glCode: "003",
+    text: "Some text 3",
+  },
+  {
+    debit: "Debit 4",
+    glDesc: "GL Description 4",
+    glCode: "004",
+    text: "Some text 4",
+  },
+  {
+    debit: "Debit 5",
+    glDesc: "GL Description 5",
+    glCode: "005",
+    text: "Some text 5",
+  },
+  {
+    debit: "Debit 6",
+    glDesc: "GL Description 6",
+    glCode: "005",
+    text: "Some text 6",
+  },
+  {
+    debit: "Debit 7",
+    glDesc: "GL Description 7",
+    glCode: "007",
+    text: "Some text 7",
+  },
+  {
+    debit: "Debit 8",
+    glDesc: "GL Description 8",
+    glCode: "008",
+    text: "Some text 8",
+  },
+  {
+    debit: "Debit 9",
+    glDesc: "GL Description 9",
+    glCode: "009",
+    text: "Some text 9",
+  },
   // Add more line items as needed
 ];
 class InvoiceForm extends Component {
@@ -42,6 +88,15 @@ class InvoiceForm extends Component {
         },
         reference: "",
       },
+      selectedDatabase: "mongo",
+      database: [
+        { type: "mongo", url: "http://localhost:4200/api/invoices" },
+        {
+          type: "postgres",
+          url: "http://localhost:4200/postgres/api/invoices",
+        },
+      ],
+      alert: false,
     };
   }
 
@@ -81,6 +136,14 @@ class InvoiceForm extends Component {
   // Handle form submission
   handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { selectedDatabase, database } = this.state;
+
+    console.log(this.state);
+    const selectedDbUrl = database.find(
+      (db) => db.type === selectedDatabase
+    )?.url;
+
     const newInvoice = {
       currency: this.state.currency,
       basicAmount: this.state.basicAmount,
@@ -103,19 +166,60 @@ class InvoiceForm extends Component {
     };
 
     try {
-      const response = await fetch("http://localhost:4200/api/invoices", {
+      const response = await fetch(selectedDbUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newInvoice),
       });
+
       const data = await response.json();
       this.props.refreshInvoices(); // Refresh the invoice list
+      this.setState({alert:  true});
+
+
       console.log("Invoice created:", data);
+
+      setTimeout(() => {    
+        this.setState({
+          currency: "",
+          basicAmount: "",
+          taxAmount: "",
+          totalAmount: "",
+          advancePaid: "",
+          tcsAmount: "",
+          netPayable: "",
+          payeeDetails: {
+            alternatePayee1: "",
+            alternatePayee2: "",
+            city: "",
+            country: "",
+            bankDetails: {
+              ifscCode: "",
+              accountNo: "",
+            },
+            reference: "",
+          },
+          selectedDatabase: "mongo",
+          database: [
+            { type: "mongo", url: "http://localhost:4200/api/invoices" },
+            {
+              type: "postgres",
+              url: "http://localhost:4200/postgres/api/invoices",
+            },
+          ],
+          alert: false,
+        })
+      }, 4000);
     } catch (error) {
       console.error("Error creating invoice:", error);
     }
+  };
+
+  // Handle radio button change to select the database
+  handleDatabaseChange = (e) => {
+    this.setState({ selectedDatabase: e.target.value });
   };
 
   render() {
@@ -134,7 +238,9 @@ class InvoiceForm extends Component {
           <AccordionDetails>
             <div className="invoice-amount-details accordion accordion-1">
               <div>
-                <label>Currency<span className="marker">*</span>: </label>
+                <label>
+                  Currency<span className="marker">*</span>:{" "}
+                </label>
                 <input
                   type="text"
                   name="currency"
@@ -143,7 +249,9 @@ class InvoiceForm extends Component {
                 />
               </div>
               <div>
-                <label>Basic Amount <span className="marker">*</span>: </label>
+                <label>
+                  Basic Amount <span className="marker">*</span>:{" "}
+                </label>
                 <input
                   type="number"
                   name="basicAmount"
@@ -152,7 +260,9 @@ class InvoiceForm extends Component {
                 />
               </div>
               <div>
-                <label>Tax Amount<span className="marker">*</span>: </label>
+                <label>
+                  Tax Amount<span className="marker">*</span>:{" "}
+                </label>
                 <input
                   type="number"
                   name="taxAmount"
@@ -161,7 +271,9 @@ class InvoiceForm extends Component {
                 />
               </div>
               <div>
-                <label>Total Amount<span className="marker">*</span>: </label>
+                <label>
+                  Total Amount<span className="marker">*</span>:{" "}
+                </label>
                 <input
                   type="number"
                   name="totalAmount"
@@ -170,7 +282,9 @@ class InvoiceForm extends Component {
                 />
               </div>
               <div>
-                <label>Advance Paid<span className="marker">*</span>: </label>
+                <label>
+                  Advance Paid<span className="marker">*</span>:{" "}
+                </label>
                 <input
                   type="number"
                   name="advancePaid"
@@ -179,7 +293,9 @@ class InvoiceForm extends Component {
                 />
               </div>
               <div>
-                <label>TCS Amount<span className="marker">*</span>: </label>
+                <label>
+                  TCS Amount<span className="marker">*</span>:{" "}
+                </label>
                 <input
                   type="number"
                   name="tcsAmount"
@@ -188,7 +304,9 @@ class InvoiceForm extends Component {
                 />
               </div>
               <div>
-                <label>Net Payable<span className="marker">*</span>: </label>
+                <label>
+                  Net Payable<span className="marker">*</span>:{" "}
+                </label>
                 <input
                   type="number"
                   name="netPayable"
@@ -285,11 +403,35 @@ class InvoiceForm extends Component {
             <Typography fontWeight={600}>Line Item Details</Typography>
           </AccordionSummary>
           <AccordionDetails>
-          <LineItemList lineItems={lineItemsData} />
+            <LineItemList lineItems={lineItemsData} />
           </AccordionDetails>
         </Accordion>
 
         <div className="button-container">
+          <div className="db-container">
+            <label>
+              DB?<span className="marker">*</span>:{" "}
+            </label>
+            <div>
+              <input
+                type="radio"
+                name="selectedDatabase"
+                value="mongo"
+                checked={this.state.selectedDatabase === "mongo"}
+                onChange={this.handleDatabaseChange}
+              />
+              MongoDB
+              <input
+                type="radio"
+                name="selectedDatabase"
+                value="postgres"
+                checked={this.state.selectedDatabase === "postgres"}
+                onChange={this.handleDatabaseChange}
+              />
+              PostgreSQL
+            </div>
+          </div>
+
           <Button type="button" variant="contained">
             Calculate
           </Button>
@@ -297,6 +439,7 @@ class InvoiceForm extends Component {
             Add
           </Button>
         </div>
+        {this.state.alert && <ActionAlerts  successMessage="Added data successfully" />}
       </form>
     );
   }

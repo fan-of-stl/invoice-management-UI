@@ -50,3 +50,12 @@
     font-weight: 400;
     color: red;
 }
+
+.db-container{
+    display: flex;
+    gap: 10px;
+}
+
+.db-container input{
+    margin-left: 4px;
+}
